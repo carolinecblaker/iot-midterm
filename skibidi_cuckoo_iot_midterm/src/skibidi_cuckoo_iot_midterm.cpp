@@ -38,6 +38,7 @@ SYSTEM_MODE(MANUAL);
 Button lightButton(BUTTONPIN);
 Button powerButton(BUTTON2PIN);
 Adafruit_NeoPixel pixel(PIXELCOUNT, SPI, WS2812B);
+Servo myServo;
 
 void displayTheTime(int timeHour,int timeMinute);
 void playShow();
@@ -51,6 +52,8 @@ void setup() {
   pixel.setBrightness(37);
   pixel.show(); //initialize all off
   
+  myServo.attach(A5);
+
   WiFi.on();
   WiFi.clearCredentials();
   WiFi.setCredentials("IoTNetwork");
@@ -58,6 +61,8 @@ void setup() {
   while (WiFi.connecting()){
   //  Serial.print(".");
   }
+  Particle.syncTime();
+  Time.zone(-6);
   waitFor(Serial.isConnected,15000);
   //Serial.print("\nSerial begin\n");
   //TODO: get the time
@@ -66,6 +71,8 @@ void setup() {
 
 void loop() { 
   now= millis();
+  timeHour = Time.hour();
+  timeMinute = Time.minute();
  // Serial.print("Loop\n");
   if (powerButton.isClicked()){
     onOff= !onOff;
@@ -90,12 +97,17 @@ void  displayTheTime(int timeHour, int timeMinute){
 }
 void  playShow(){
   Serial.print("\nWelcome to the shit show\n");
+
+  // open toilet
+  // myServo.write(60);
   wemoWrite(MYWEMO,1);
   // Sequence of cool shit (come on, it's toilet themed.)
   pixelFill(0,15,magenta);
   playNow=0;
-  delay(5000);
+  delay(5000); // just so it doesn't go away to quickly
   wemoWrite(MYWEMO,0);
+  //close toilet
+  // myServo.write(0);
   pixel.clear(); // not working
   pixel.show();
 
