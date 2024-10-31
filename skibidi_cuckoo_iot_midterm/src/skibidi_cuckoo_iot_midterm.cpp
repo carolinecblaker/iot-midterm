@@ -60,7 +60,7 @@ const int MYWEMO = 1;
 const int BUTTONPIN = D2;
 const int BUTTON2PIN = D7;
 const int PIXELCOUNT = 16;
-bool onOff = 0;
+bool onOff = 1;
 bool playNow =0;
 int now;
 int timeCode;
@@ -82,7 +82,7 @@ Button powerButton(BUTTON2PIN);
 Adafruit_NeoPixel pixel(PIXELCOUNT, SPI, WS2812B);
 Adafruit_SSD1306 displayL(OLED_RESET);
 Adafruit_SSD1306 displayR(OLED_RESET);
-//DFRobotDFPlayerMini myDFPlayer; <-- red zone
+DFRobotDFPlayerMini myDFPlayer; //<-- red zone
 Servo myServo;
 
 void displayTheTime(int timeHour, int timeMinute);
@@ -94,7 +94,14 @@ void setup() {
   Serial.begin(9600);
   waitFor(Serial.isConnected,10000);
   Serial1.begin(9600);
-  delay(1000);
+
+
+   if (!myDFPlayer.begin(Serial1)) {  //Use softwareSerial to communicate with mp3.
+    Serial.printf("Unable to begin:\n");
+    Serial.printf("1.Please recheck the connection!\n");
+    Serial.printf("2.Please insert the SD card!\n");
+    while(true);
+  }
 
   displayL.begin(SSD1306_SWITCHCAPVCC, 0x3d);
   displayR.begin(SSD1306_SWITCHCAPVCC, 0x3c);
